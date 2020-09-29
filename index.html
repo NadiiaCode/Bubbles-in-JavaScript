@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bubles</title>
+  </head>
+  <body>
+    <script>
+      window.addEventListener("load", (event) => {
+        const canvas = document.createElement("canvas");
+
+        document.body.style.backgroundColor = "rosybrown";
+
+        document.body.append(canvas);
+
+        const body = canvas.getContext("2d");
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        /*choose any colors that u like*/
+        const colors = [
+          "#ff0000",
+          "#ff6f6f",
+          "#ff5e00",
+          "#ffc400",
+          "#d0ff00",
+          "#5eff00",
+          "#00ff62",
+          "#00ffdd",
+          "#0084ff",
+          "#0400ff",
+          "#ae00ff",
+          "#ff00c8",
+          "#ffffff",
+          "#ff008c",
+          "#5f2538",
+        ];
+
+        const gravity = 1;
+        /*experiment with const friction number*/
+        const friction = 0.99;
+
+        class shapeBall {
+          constructor(
+            positionX,
+            positionY,
+            velocityX,
+            velocityY,
+            radius,
+            color
+          ) {
+            this.positionX = positionX;
+            this.positionY = positionY;
+            this.velocityX = velocityX;
+            this.velocityY = velocityY;
+            this.radius = radius;
+            this.color = color;
+
+            this.ball = () => {
+              body.beginPath();
+              body.arc(
+                this.positionX,
+                this.positionY,
+                this.radius,
+                0,
+                Math.PI * 2,
+                false
+              );
+              body.stroke();
+              body.strokeStyle = this.color;
+            };
+            this.data = () => {
+              if (
+                this.positionX + this.radius + this.velocityX > innerWidth ||
+                this.positionX - this.radius < 0
+              ) {
+                this.velocityX = -this.velocityX;
+              }
+              if (
+                this.positionY + this.radius + this.velocityY > innerHeight ||
+                this.positionY - this.radius < 0
+              ) {
+                this.velocityY = -this.velocityY * friction;
+              } else {
+                this.velocityY += gravity;
+              }
+              this.positionX += this.velocityX;
+              this.positionY += this.velocityY;
+              this.ball();
+            };
+          }
+        }
+
+        function randomColor(colors) {
+          return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function randomSize(x, y) {
+          return Math.floor(Math.random() * (y - x * 1.1) + x);
+        }
+
+        let roundBalls;
+
+        function ballElements() {
+          roundBalls = [];
+
+          for (let i = 0; i < 200; i++) {
+            const radius = randomSize(15, 40);
+            const positionX = randomSize(radius, innerWidth - radius);
+            const positionY = randomSize(radius, innerHeight - radius);
+
+            const velocityX = randomSize(-4, 3);
+            const velocityY = randomSize(-4, 3);
+
+            const color = randomColor(colors);
+            roundBalls.push(
+              new shapeBall(
+                positionX,
+                positionY,
+                velocityX,
+                velocityY,
+                radius,
+                color
+              )
+            );
+          }
+        }
+
+        function jumpAnimation() {
+          requestAnimationFrame(jumpAnimation);
+          body.clearRect(0, 0, innerWidth, innerHeight);
+          for (let i = 0; i < roundBalls.length; i++) {
+            roundBalls[i].data();
+          }
+        }
+
+        ballElements();
+        jumpAnimation();
+
+        addEventListener("click", function () {
+          ballElements();
+        });
+      });
+    </script>
+  </body>
+</html>
